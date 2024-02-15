@@ -6,3 +6,59 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r library load}
+library(tidyverse)
+library(tidymodels)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r data load}
+news <- read.csv('~/STA 631/activity_03_mlr/MiniComp1/activity04-mini-competition/news.csv')
+```
+
+```{r data preview}
+head(news)
+str(news)
+```
+
+```{r train-test}
+
+set.seed(123)  # Setting a seed for reproducibility
+
+# Create a vector of row indices for the training set (80%)
+train_indices <- sample(1:nrow(news), 0.8 * nrow(news))
+
+# Create the training set
+train_data <- news[train_indices, ]
+
+# Create the testing set (20%)
+test_data <- news[-train_indices, ]
+
+# Check the dimensions of the training and testing sets
+dim(train_data)
+dim(test_data)
+
+```
+
+```{r}
+write.csv(train_data, file = "train_data.csv")
+# Write data to csv files: 
+# decimal point = comma (",") and value separators = semicolon (";")
+write.csv2(test_data, file = "test_data.csv")
+```
+
+```{r}
+lm_spec <- linear_reg() %>%
+  set_mode("regression") %>%
+  set_engine("lm")
+
+lm_spec
+
+mlr_mod <- lm_spec %>% 
+fit(SentimentHeadline ~ Facebook + LinkedIn, data = train_data)
+
+# model output
+tidy(mlr_mod)
+```
